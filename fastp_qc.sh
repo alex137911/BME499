@@ -11,7 +11,10 @@
 # Load the fastp module
 module load fastp/0.23.4
 
+# Specify the path to the FASTQ files
+FASTQ_PATH="/home/a252chan/projects/def-acdoxey/a252chan/SRR15197167/fastq"
+
 # Run fastp for quality control and trimming
-fastp -i SRR15197167.sra_1.fastq -o trimmed_SRR15197167_1.fastq \
-      -I SRR15197167.sra_2.fastq -O trimmed_SRR15197167_2.fastq \
-      --html fastp_report.html --json fastp_report.json
+fastp -i ${FASTQ_PATH}/SRR15197167.sra_1.fastq -o ${FASTQ_PATH}/trimmed_SRR15197167_1.fastq \
+      -I ${FASTQ_PATH}/SRR15197167.sra_2.fastq -O ${FASTQ_PATH}/trimmed_SRR15197167_2.fastq \
+      --html ${FASTQ_PATH}/fastp_report.html --json ${FASTQ_PATH}/fastp_report.json
