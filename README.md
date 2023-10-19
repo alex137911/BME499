@@ -1,1 +1,1 @@
-# BME499_honoursThesis
+# Code for BME 499 Research Project
