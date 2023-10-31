@@ -27,5 +27,8 @@ samtools index $OUTPUT_DIR/aligned_SRR13622898reads_sorted.bam
 # Retrieve alignments specific to the reference genome "FN545816.1"
 samtools view -b $OUTPUT_DIR/aligned_SRR13622898reads_sorted.bam "FN545816.1" > $OUTPUT_DIR/extracted_SRR13622898reads.bam
 
+# Index the extracted BAM file (to view in IGV)
+samtools index $OUTPUT_DIR/extracted_SRR13622898reads.bam
+
 # # Define the output directory
 # OUTPUT_DIR="/home/a252chan/projects/def-acdoxey/a252chan/SRR13622898"
