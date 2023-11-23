@@ -12,6 +12,7 @@
 module load StdEnv/2020
 module load samtools/1.17
 module load bcftools/1.11   # Default Version
+module load htslib/1.17     # Default version (for bgzip and tabix)
 
 # Base directory for SRA data
 SRA_DIR="/scratch/a252chan"
@@ -40,21 +41,25 @@ for SRA_ID_DIR in $SRA_DIR/*/; do
         # Call variants using bcftools
         bcftools mpileup -f "$REF_GENOME" "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | bcftools call -mv -Ov -o "${OUTPUT_DIR}${SRA_ID}_variants.vcf"
 
-        # Check coverage and extract variants
-        coverage_at_gyrA=$(samtools depth -r FN545816.1:6310 "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | awk '{print $3}')
-        coverage_at_nimB=$(samtools depth -r FN545816.1:1547984 "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | awk '{print $3}')
+        # Compress and index the VCF file
+        bgzip -c "${OUTPUT_DIR}${SRA_ID}_variants.vcf" > "${OUTPUT_DIR}${SRA_ID}_variants.vcf.gz"
+        tabix -p vcf "${OUTPUT_DIR}${SRA_ID}_variants.vcf.gz"
+
+        # Check average coverage at relevant positions and extract variants
+        coverage_at_gyrA=$(samtools depth -r FN545816.1:6310 "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | awk '{sum+=$3; cnt++} END {if (cnt>0) print sum/cnt; else print 0}')
+        coverage_at_nimB=$(samtools depth -r FN545816.1:1547984 "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | awk '{sum+=$3; cnt++} END {if (cnt>0) print sum/cnt; else print 0}')
 
         # Checks if there is no coverage at all or if it is 0
-        if [[ -z "$coverage_at_gyrA" || "$coverage_at_gyrA" -eq 0 ]]; then
+        if [[ -z "$coverage_at_gyrA" || "$coverage_at_gyrA" == "0" ]]; then
             gyrA_base="Not Covered"
         else
-            gyrA_base=$(bcftools query -f '%ALT' -r FN545816.1:6310 "${OUTPUT_DIR}${SRA_ID}_variants.vcf")
+            gyrA_base=$(bcftools query -f '%ALT' -r FN545816.1:6310 "${OUTPUT_DIR}${SRA_ID}_variants.vcf.gz")
         fi
 
-        if [[ -z "$coverage_at_nimB" || "$coverage_at_nimB" -eq 0 ]]; then
+        if [[ -z "$coverage_at_nimB" || "$coverage_at_nimB" == "0" ]]; then
             nimB_base="Not Covered"
         else
-            nimB_base=$(bcftools query -f '%ALT' -r FN545816.1:1547984 "${OUTPUT_DIR}${SRA_ID}_variants.vcf")
+            nimB_base=$(bcftools query -f '%ALT' -r FN545816.1:1547984 "${OUTPUT_DIR}${SRA_ID}_variants.vcf.gz")
         fi
 
         # Write to CSV with coverage check
