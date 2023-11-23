@@ -21,7 +21,7 @@ REF_GENOME="/home/a252chan/scratch/closDifficile.fasta"
 
 # Output CSV file
 CSV_FILE="${SRA_DIR}/mutation_analysis.csv"
-echo "SRA_ID,gyrA_mutation,nimB_mutation" > "$CSV_FILE"
+echo "SRA_ID,gyrA_mutation,gyrA_coverage,nimB_mutation,nimB_coverage" > "$CSV_FILE"
 
 # Loop through each SRA ID directory
 for SRA_ID_DIR in $SRA_DIR/*/; do
@@ -58,7 +58,7 @@ for SRA_ID_DIR in $SRA_DIR/*/; do
         fi
 
         # Write to CSV with coverage check
-        echo "${SRA_ID},${gyrA_base:-N},${nimB_base:-N}" >> "$CSV_FILE"
+        echo "${SRA_ID},${gyrA_base:-N},${coverage_at_gyrA:-0},${nimB_base:-N},${coverage_at_nimB:-0}" >> "$CSV_FILE"
     else
         echo "BAM file for $SRA_ID not found, skipping."
     fi
