@@ -29,9 +29,13 @@ for SRA_ID in "${SRA_IDS[@]}"; do
     #     continue  # Skip to the next SRA ID
     # fi
     
-    # Define the path to the .sra file
-    SRA_PATH="$SRA_DIR/$SRA_ID/$SRA_ID.sra"
-    
+    # # Define the path to the .sra file
+    # SRA_PATH="$SRA_DIR/$SRA_ID/$SRA_ID.sra"
+
+    # Create a directory for each SRA ID
+    SRA_ID_DIR="$SRA_DIR/$SRA_ID"
+    mkdir -p "$SRA_ID_DIR"
+
     # Create a directory for the fastq files
     FASTQ_DIR="/scratch/a252chan/$SRA_ID/fastq"
     mkdir -p "$FASTQ_DIR"
