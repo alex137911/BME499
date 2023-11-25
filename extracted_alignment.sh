@@ -34,6 +34,9 @@ for SRA_ID_DIR in $SRA_DIR/*/; do
 
     # Check if the BAM file exists
     if [[ -f "${OUTPUT_DIR}aligned_${SRA_ID}_reads.bam" ]]; then
+        # Remove any existing temporary files
+        rm -f "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam.tmp.*"
+
         # Sort and index the BAM file
         samtools sort "${OUTPUT_DIR}aligned_${SRA_ID}_reads.bam" -o "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam"
         samtools index "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam"
