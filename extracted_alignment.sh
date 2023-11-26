@@ -22,7 +22,11 @@ REF_GENOME="/home/a252chan/scratch/closDifficile.fasta"
 
 # Output CSV file
 CSV_FILE="${SRA_DIR}/mutation_analysis.csv"
-echo "SRA_ID,gyrA_mutation,gyrA_coverage,nimB_mutation,nimB_coverage" > "$CSV_FILE"
+
+# Check if CSV file exists and add header if it doesn't
+if [ ! -f "$CSV_FILE" ]; then
+    echo "SRA_ID,gyrA_mutation,gyrA_coverage,nimB_mutation,nimB_coverage" > "$CSV_FILE"
+fi
 
 # Loop through each SRA ID directory
 for SRA_ID_DIR in $SRA_DIR/*/; do
@@ -34,8 +38,21 @@ for SRA_ID_DIR in $SRA_DIR/*/; do
 
     # Check if the BAM file exists
     if [[ -f "${OUTPUT_DIR}aligned_${SRA_ID}_reads.bam" ]]; then
+
         # Remove any existing temporary files from incomplete runs
         rm -f "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam.tmp.*"
+
+        # Check for EOF marker in BAM file (indicative of a complete file)
+        if ! samtools quickcheck "${OUTPUT_DIR}aligned_${SRA_ID}_reads.bam" || true; then
+            echo "BAM file for $SRA_ID is corrupted or incomplete, skipping." >> "${SRA_DIR}/error_log.txt"
+            continue
+        fi
+
+        # Check if the sorted BAM file and compressed VCF file exist (from completed runs, if yes then skip)
+        if [[ -f "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" && -f "${OUTPUT_DIR}${SRA_ID}_variants.vcf.gz" ]]; then
+            echo "Sample $SRA_ID has already been processed, skipping."
+            continue
+        fi
 
         # Sort and index the BAM file
         samtools sort "${OUTPUT_DIR}aligned_${SRA_ID}_reads.bam" -o "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam"
