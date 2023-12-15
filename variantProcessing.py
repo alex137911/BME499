@@ -9,7 +9,7 @@ from itertools import combinations
 os.chdir("C:/Users/acale/OneDrive/Documents/Waterloo BME/4A/BME 499/BME499/Data/")
 
 # Read in the data
-cDifficile_variants = pd.read_csv('11-29mutation_analysis.csv', sep=',', header=0)
+cDifficile_variants = pd.read_csv('mutation_analysis.csv', sep=',', header=0)
 
 # -------------------------------------------------------------------
 # Define the mutation columns
