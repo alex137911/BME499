@@ -67,12 +67,6 @@ for SRA_ID_DIR in $SRA_DIR/*/; do
         bgzip -c "${OUTPUT_DIR}${SRA_ID}_variants.vcf" > "${OUTPUT_DIR}${SRA_ID}_variants.vcf.gz"
         tabix -p vcf "${OUTPUT_DIR}${SRA_ID}_variants.vcf.gz"
 
-        # # Check average average depth at relevant positions and extract variants
-        # coverage_at_gyrA=$(samtools depth -r FN545816.1:6310 "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | awk '{sum+=$3; cnt++} END {if (cnt>0) print sum/cnt; else print 0}')
-        # coverage_at_rpoB=$(samtools depth -r FN545816.1:97336 "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | awk '{sum+=$3; cnt++} END {if (cnt>0) print sum/cnt; else print 0}')
-        # coverage_at_nimB=$(samtools depth -r FN545816.1:1547984 "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | awk '{sum+=$3; cnt++} END {if (cnt>0) print sum/cnt; else print 0}')
-        # coverage_at_vanR=$(samtools depth -r FN545816.1:1794733 "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | awk '{sum+=$3; cnt++} END {if (cnt>0) print sum/cnt; else print 0}')
-
         # Check average average depth 10 bases before and after relevant positions and extract variants
         coverage_at_gyrA=$(samtools depth -r FN545816.1:6300-6320 "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | awk '{sum+=$3; cnt++} END {if (cnt>0) print sum/cnt; else print 0}')
         coverage_at_rpoB=$(samtools depth -r FN545816.1:97326-97346 "${OUTPUT_DIR}aligned_${SRA_ID}_reads_sorted.bam" | awk '{sum+=$3; cnt++} END {if (cnt>0) print sum/cnt; else print 0}')
