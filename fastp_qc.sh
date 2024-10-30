@@ -11,17 +11,25 @@
 # Load the fastp module
 module load fastp/0.23.4
 
-# Start from "SRR9865528" (row 1318)
-
 # Loop through each SRA ID
 for SRA_ID in /scratch/a252chan/*/; do
     SRA_ID=$(basename $SRA_ID)
-
+    
     # Delete .SRA files
-      rm -r /scratch/a252chan/${SRA_ID}/${SRA_ID}.sra
+    rm -r /scratch/a252chan/${SRA_ID}/${SRA_ID}.sra
 
     # Specify the path to the FASTQ files
     FASTQ_PATH="/scratch/a252chan/${SRA_ID}/fastq"
+
+    # Define the path for the trimmed FASTQ files
+    TRIMMED_FASTQ_PATH_1="/scratch/a252chan/${SRA_ID}/fastq/trimmed_${SRA_ID}_1.fastq"
+    TRIMMED_FASTQ_PATH_2="/scratch/a252chan/${SRA_ID}/fastq/trimmed_${SRA_ID}_2.fastq"
+
+    # Check if the trimmed FASTQ files exist
+    if [[ -f "$TRIMMED_FASTQ_PATH_1" && -f "$TRIMMED_FASTQ_PATH_2" ]]; then
+        echo "Trimmed FASTQ files for $SRA_ID already exist, skipping."
+        continue
+    fi
 
     # Run fastp for quality control and trimming
     fastp -i "${FASTQ_PATH}/${SRA_ID}_1.fastq" -o "${FASTQ_PATH}/trimmed_${SRA_ID}_1.fastq" \
